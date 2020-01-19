@@ -116,6 +116,9 @@ class GridPanel extends JPanel {
                 } else if (e.getKeyCode() == 84) {
                     deleteFloatingBlocks();
                     repaint();
+                }else if(e.getKeyCode() == 70){
+                    fill();
+                    repaint();
                 }
             }
 
@@ -136,9 +139,11 @@ class GridPanel extends JPanel {
     public boolean isValidGridCoordinates(Point at) {
         return at.x >= 0 && at.x < this.grid.length && at.y > 0 && at.y < this.grid[0].length;
     }
-    public boolean isValidDragCoordinates(Point at){
+
+    public boolean isValidDragCoordinates(Point at) {
         return at.x >= 0 && at.x < this.grid.length && at.y >= 0 && at.y < this.grid[0].length;
     }
+
     public void toggleGrid(Point at, boolean bool) {
         if (isValidGridCoordinates(at)) {
             this.grid[at.x][at.y] = bool;
@@ -154,8 +159,16 @@ class GridPanel extends JPanel {
         int x = click.x;
         int y = click.y;
         int grid_x = (x - X_OFFSET) / width;
-        int grid_y = (available_height - y) / height;
+        int grid_y = (available_height - y - Y_OFFSET) / height;
         return new Point(grid_x, grid_y);
+    }
+
+    public void fill() {
+        for (int i = 0; i < this.grid.length; i++) {
+            for (int j = this.grid[i].length - 2; j >= 0; j--) {
+                this.grid[i][j] |= this.grid[i][j + 1];
+            }
+        }
     }
 
     public void deleteFloatingBlocks() {

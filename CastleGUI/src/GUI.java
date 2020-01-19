@@ -9,7 +9,13 @@ public class GUI extends JFrame {
     JPanel grid_panel = new GridPanel();
 
     public static void main(String[] args) {
-        GUI g = new GUI();
+        //GUI g = new GUI();
+        //for (int i = 1; i < 20; i++) {
+        //    System.out.println("2: " + BruteForce.brute_force(i, 2) + " 3: " + BruteForce.brute_force(i, 3) + " 4: " + BruteForce.brute_force(i, 4));
+        //}
+        for (int i = 2; i <= 13; i++) {
+            System.out.println("10 at "+i+" : " + BruteForce.brute_force(10, i));
+        }
     }
 
     public GUI() {
@@ -29,8 +35,8 @@ class GridPanel extends JPanel {
     public final static Color MARK_COLOR = Color.RED;
     public final static int X_OFFSET = 20;
     public final static int Y_OFFSET = 20;
-    public final static int GRID_WIDTH = 20;
-    public final static int GRID_HEIGHT = 8;
+    public final static int GRID_WIDTH = 5;
+    public final static int GRID_HEIGHT = 2;
     Color[][] grid = new Color[GRID_WIDTH][GRID_HEIGHT];
     int moving_colmn = -1;
 
@@ -154,7 +160,7 @@ class GridPanel extends JPanel {
     public void toggleGrid(Point at, boolean bool) {
         if (isValidGridCoordinates(at)) {
             if (bool) {
-                if(!MARK_COLOR.equals(this.grid[at.x][at.y])) {
+                if (!MARK_COLOR.equals(this.grid[at.x][at.y])) {
                     this.grid[at.x][at.y] = STANDARD_COLOR;
                 }
             } else {
@@ -177,7 +183,7 @@ class GridPanel extends JPanel {
         int available_width = this.getWidth() - 2 * X_OFFSET;
         int available_height = this.getHeight() - 2 * Y_OFFSET;
         int width = available_width / this.grid.length;
-        int height = available_height / this.grid[0].length;
+        int height = available_height / (this.grid[0].length + 1);
         height = Math.min(height, width);
         int x = click.x;
         int y = click.y;
@@ -189,7 +195,7 @@ class GridPanel extends JPanel {
     public void fill() {
         for (int i = 0; i < this.grid.length; i++) {
             for (int j = this.grid[i].length - 2; j >= 0; j--) {
-                this.grid[i][j] = this.grid[i][j + 1] != null ? this.grid[i][j]==null?STANDARD_COLOR:this.grid[i][j] : this.grid[i][j];
+                this.grid[i][j] = this.grid[i][j + 1] != null ? this.grid[i][j] == null ? STANDARD_COLOR : this.grid[i][j] : this.grid[i][j];
             }
         }
     }
@@ -221,7 +227,7 @@ class GridPanel extends JPanel {
         int available_height = this.getHeight() - 2 * Y_OFFSET;
 
         int width = available_width / this.grid.length;
-        int height = available_height / this.grid[0].length;
+        int height = available_height / (this.grid[0].length + 1);
         height = Math.min(height, width);
         for (int i = 0; i < this.grid.length; i++) {
             for (int j = 0; j < this.grid[i].length; j++) {

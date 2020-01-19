@@ -25,11 +25,13 @@ public class GUI extends JFrame {
 }
 
 class GridPanel extends JPanel {
+    public final static Color STANDARD_COLOR = new Color(143, 78, 41);
+    public final static Color MARK_COLOR = Color.RED;
     public final static int X_OFFSET = 20;
     public final static int Y_OFFSET = 20;
     public final static int GRID_WIDTH = 20;
     public final static int GRID_HEIGHT = 8;
-    boolean[][] grid = new boolean[GRID_WIDTH][GRID_HEIGHT];
+    Color[][] grid = new Color[GRID_WIDTH][GRID_HEIGHT];
     int moving_colmn = -1;
 
     public GridPanel() {
@@ -86,7 +88,7 @@ class GridPanel extends JPanel {
                         } else {
                             //swap
                             int curr_colm = translate.x;
-                            boolean[] grid_colm = grid[moving_colmn];
+                            Color[] grid_colm = grid[moving_colmn];
                             grid[moving_colmn] = grid[curr_colm];
                             grid[curr_colm] = grid_colm;
                             moving_colmn = curr_colm;
@@ -116,8 +118,13 @@ class GridPanel extends JPanel {
                 } else if (e.getKeyCode() == 84) {
                     deleteFloatingBlocks();
                     repaint();
-                }else if(e.getKeyCode() == 70){
+                } else if (e.getKeyCode() == 70) {
                     fill();
+                    repaint();
+                } else if (e.getKeyCode() == 74) {
+                    Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
+                    Point translate = translateCoordinates(mouseLoc);
+                    markGrid(translate);
                     repaint();
                 }
             }
@@ -130,9 +137,9 @@ class GridPanel extends JPanel {
     }
 
     public void resetGrid() {
-        this.grid = new boolean[GRID_WIDTH][GRID_HEIGHT];
+        this.grid = new Color[GRID_WIDTH][GRID_HEIGHT];
         for (int i = 0; i < this.grid.length; i++) {
-            this.grid[i][0] = true;
+            this.grid[i][0] = STANDARD_COLOR;
         }
     }
 
@@ -146,7 +153,23 @@ class GridPanel extends JPanel {
 
     public void toggleGrid(Point at, boolean bool) {
         if (isValidGridCoordinates(at)) {
-            this.grid[at.x][at.y] = bool;
+            if (bool) {
+                if(!MARK_COLOR.equals(this.grid[at.x][at.y])) {
+                    this.grid[at.x][at.y] = STANDARD_COLOR;
+                }
+            } else {
+                this.grid[at.x][at.y] = null;
+            }
+        }
+    }
+
+    public void markGrid(Point at) {
+        if (isValidDragCoordinates(at)) {
+            if (MARK_COLOR.equals(this.grid[at.x][at.y])) {
+                this.grid[at.x][at.y] = STANDARD_COLOR;
+            } else {
+                this.grid[at.x][at.y] = MARK_COLOR;
+            }
         }
     }
 
@@ -166,7 +189,7 @@ class GridPanel extends JPanel {
     public void fill() {
         for (int i = 0; i < this.grid.length; i++) {
             for (int j = this.grid[i].length - 2; j >= 0; j--) {
-                this.grid[i][j] |= this.grid[i][j + 1];
+                this.grid[i][j] = this.grid[i][j + 1] != null ? this.grid[i][j]==null?STANDARD_COLOR:this.grid[i][j] : this.grid[i][j];
             }
         }
     }
@@ -174,7 +197,7 @@ class GridPanel extends JPanel {
     public void deleteFloatingBlocks() {
         for (int i = 0; i < this.grid.length; i++) {
             for (int j = 1; j < this.grid[i].length; j++) {
-                this.grid[i][j] &= this.grid[i][j - 1];
+                this.grid[i][j] = this.grid[i][j - 1] == null ? null : this.grid[i][j];
             }
         }
     }
@@ -183,7 +206,7 @@ class GridPanel extends JPanel {
         int counter = 0;
         for (int j = 0; j < this.grid[0].length; j++) {
             for (int i = 0; i < this.grid.length; i++) {
-                if (this.grid[i][j] && (i == 0 || !this.grid[i - 1][j])) {
+                if (this.grid[i][j] != null && (i == 0 || (this.grid[i - 1][j] == null))) {
                     counter += 1;
                 }
             }
@@ -202,11 +225,11 @@ class GridPanel extends JPanel {
         height = Math.min(height, width);
         for (int i = 0; i < this.grid.length; i++) {
             for (int j = 0; j < this.grid[i].length; j++) {
-                if (grid[i][j]) {
+                if (grid[i][j] != null) {
                     if (i == moving_colmn) {
                         g.setColor(Color.GREEN);
                     } else {
-                        g.setColor(new Color(143, 78, 41));
+                        g.setColor(grid[i][j]);
                     }
                     g.fillRect(X_OFFSET + i * width, available_height - (Y_OFFSET + (j + 1) * height), width, height);
                     g.setColor(Color.BLACK);
